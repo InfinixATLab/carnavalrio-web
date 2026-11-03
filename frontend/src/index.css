@@ -390,7 +390,7 @@ button .icon-box,a .icon-box {
   border-bottom: 1px solid var(--line);
 }
 
-.lead>img {
+.lead>.news-image {
   grid-column: 2;
   grid-row: 1;
   border-radius: var(--radius);
@@ -447,7 +447,7 @@ button .icon-box,a .icon-box {
   border-bottom: 1px solid var(--line);
 }
 
-.compact>img {
+.compact>.news-image {
   border-radius: var(--radius);
 }
 
@@ -501,7 +501,7 @@ button .icon-box,a .icon-box {
   letter-spacing: -.035em;
 }
 
-.news-card.tile>img {
+.news-card.tile>.news-image {
   border-radius: var(--radius);
 }
 
@@ -918,7 +918,7 @@ figcaption {
   gap: var(--s5);
 }
 
-.admin-news>img {
+.admin-news>.news-image {
   width: 112px;
   flex: none;
   border-radius: var(--radius);
@@ -1397,7 +1397,7 @@ dialog.account-menu {
     --od-gap: 16px
 ;
   }
-  .lead>img {
+  .lead>.news-image {
     order: 0;
   }
   .lead .card-copy {
@@ -1528,7 +1528,7 @@ dialog.account-menu {
     align-items: flex-start;
     gap: var(--s4);
   }
-  .admin-news>img {
+  .admin-news>.news-image {
     width: 96px;
   }
   .admin-news h2 {
@@ -1716,7 +1716,7 @@ dialog.account-menu {
   flex: none;
 }
 
-.news-card > img {
+.news-card > .news-image {
   width: 100%;
   height: auto;
 }
@@ -1980,3 +1980,13 @@ dialog.account-menu {
 .home:has(.empty-state) .home-intro { margin-bottom: 16px; padding-bottom: 16px; }
 .home .empty-state { flex: 1; padding: 24px; }
 .maintenance { justify-content: center; padding-block: 16px; }
+
+/* A decoded image covers the shimmer; failed images keep a static gray surface. */
+.news-image { position: relative; display: block; overflow: hidden; width: 100%; background: #e5e7eb; }
+.news-image > img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; opacity: 1; }
+.news-image[data-state="loading"] > img { opacity: 0; }
+.news-image[data-state="error"] > img { visibility: hidden; }
+.image-shimmer { position: absolute; inset: 0; overflow: hidden; background: #e5e7eb; }
+.image-shimmer::after { content: ""; position: absolute; inset: 0; transform: translateX(-100%); background: linear-gradient(90deg, transparent, #ffffff80, transparent); animation: image-shimmer 1.3s ease-in-out infinite; }
+@keyframes image-shimmer { to { transform: translateX(100%); } }
+@media (prefers-reduced-motion: reduce) { .image-shimmer::after { animation: none; } }

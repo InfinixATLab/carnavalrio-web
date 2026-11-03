@@ -1,3 +1,4 @@
+import NewsImage from "../components/NewsImage/NewsImage";
 import Spinner from "../components/Spinner/Spinner";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
@@ -143,7 +144,7 @@ export default function Home() {
                     <div aria-busy={loading}>
                         {loading && <p className="loading-label" role="status"><Spinner inline />Atualizando notícias...</p>}
                         <Link to={`/radar/${highlight.slug}`} className="news-card lead">
-                            {highlight.image?.url && <img src={highlight.image.url} alt={highlight.image.alt || ""} />}
+                            {highlight.image?.url && <NewsImage src={highlight.image.url} alt={highlight.image.alt || ""} />}
                             <div className="card-copy">
                                 {highlight.school && <p className="eyebrow">{highlight.school}</p>}
                                 <h2>{highlight.title}</h2>
@@ -154,7 +155,7 @@ export default function Home() {
                         <div className="compact-grid">
                             {mainList.map(item => (
                                 <Link key={item.id} to={`/radar/${item.slug}`} className="news-card compact">
-                                    {item.image?.url && <img src={item.image.url} alt={item.image.alt || ""} loading="lazy" />}
+                                    {item.image?.url && <NewsImage src={item.image.url} alt={item.image.alt || ""} loading="lazy" />}
                                     <div className="card-copy">{item.school && <p className="eyebrow">{item.school}</p>}<h2>{item.title}</h2></div>
                                 </Link>
                             ))}
@@ -162,7 +163,7 @@ export default function Home() {
                         {remnantList.length > 0 && <><div className="section-label"><h2>Mais notícias</h2><span aria-hidden="true" /></div>
                             <div className="news-grid">{remnantList.map(item => (
                                 <Link key={item.id} to={`/radar/${item.slug}`} className="news-card tile">
-                                    {item.image?.url && <img src={item.image.url} alt={item.image.alt || ""} loading="lazy" />}
+                                    {item.image?.url && <NewsImage src={item.image.url} alt={item.image.alt || ""} loading="lazy" />}
                                     <div className="card-copy">{item.school && <p className="eyebrow">{item.school}</p>}<h2>{item.title}</h2></div>
                                 </Link>
                             ))}</div></>}

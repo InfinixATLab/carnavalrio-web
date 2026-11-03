@@ -1,3 +1,4 @@
+import NewsImage from "../components/NewsImage/NewsImage";
 import { useEffect, useState } from "react";
 import Header from "../components/Header/Header";
 import type { News } from "../interfaces/News";
@@ -79,7 +80,7 @@ export default function Article() {
                 {article.school?.name && <p className="eyebrow">{article.school.name}</p>}
                 <h1>{article.title}</h1>
                 <p className="byline"><span>Por {article.author_name} {article.author?.surname}</span><span>{formatarDataHora(article.updated_at)}</span></p>
-                {image?.file && <figure><img src={image.file} alt={image.alt || ""} className="cover-preview" /><figcaption>{image.alt}</figcaption></figure>}
+                {image?.file && <figure><NewsImage src={image.file} alt={image.alt || ""} className="cover-preview" /><figcaption>{image.alt}</figcaption></figure>}
                 <div className="article-body" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.body) }} />
             </main>
             <Footer />

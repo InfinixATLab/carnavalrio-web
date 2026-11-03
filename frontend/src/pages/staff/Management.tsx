@@ -1,3 +1,4 @@
+import NewsImage from "../../components/NewsImage/NewsImage";
 import { Link, useNavigate } from "react-router-dom";
 import type { News } from "../../interfaces/News";
 import api from "../../services/api";
@@ -89,7 +90,7 @@ export default function Management() {
                     <div className="table-header"><span>Matéria</span><span>Ações</span></div>
                     {Array.isArray(news) && news.map(article => (
                         <article key={article.id ?? article.slug} className="admin-row">
-                            <div className="admin-news od-row">{article.image?.file && <img src={article.image.file} alt={article.image.alt || ""} loading="lazy" />}<h2>{article.title}</h2></div>
+                            <div className="admin-news od-row">{article.image?.file && <NewsImage src={article.image.file} alt={article.image.alt || ""} loading="lazy" />}<h2>{article.title}</h2></div>
                             <div className="row-actions od-row"><button type="button" className="icon-button" aria-label={`Editar: ${article.title}`} onClick={() => navigate(`edit/${article.slug}`)}><FiEdit2 aria-hidden="true" /></button><button type="button" className="icon-button danger-icon" aria-label={`Deletar: ${article.title}`} onClick={() => setArticleToDelete(article.slug)}><FiTrash2 aria-hidden="true" /></button></div>
                         </article>
                     ))}
