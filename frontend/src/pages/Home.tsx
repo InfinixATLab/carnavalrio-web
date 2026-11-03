@@ -8,7 +8,7 @@ import { useQuery } from "@apollo/client/react";
 import { FiSearch, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import Header from "../components/Header/Header";
 import Footer from "../components/Footer/Footer";
-import { formatarDataHora } from "../tools/Tools";
+import { formatarDataHora, getSchoolName } from "../tools/Tools";
 import type { News } from "../interfaces/News";
 import { useSchools } from "../hooks/useRegions/useSchools";
 
@@ -94,14 +94,9 @@ export default function Home() {
         
         if (!newsList || newsList.length === 0) return { highlight: null, mainList: [], remnantList: [] };
 
-        const schoolsMap = (schools || []).reduce((acc, s) => {
-            acc[s.id] = s.name; // Element implicitly has an 'any' type because expression of type 'number' can't be used to index type '{}'. No index signature with a parameter of type 'number' was found on type '{}'.
-            return acc;
-        }, {});
-
         const newsEnhanced = newsList.map((n: News) => ({
             ...n,
-            school: schoolsMap[Number(n.school)] || n.school
+            school: getSchoolName(n.school, schools)
         }))
 
         return {

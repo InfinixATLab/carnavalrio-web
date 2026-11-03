@@ -1,3 +1,5 @@
+import type { School } from "../interfaces/School";
+
 export function slug(input: string): string {
     return input
         .toLowerCase()
@@ -56,3 +58,11 @@ export function formatarDataHora(dataIso: Date | string): string {
 
     return `Em ${dia}/${mes}/${ano} - ${horas}h${minutos}`;
 };
+
+export function getSchoolName(school: string | number | null | undefined, schools: Pick<School, "id" | "name">[]): string {
+    const value = school == null ? "" : String(school).trim();
+    if (!value) return "";
+    const match = schools.find(item => String(item.id) === value);
+    if (match) return match.name;
+    return /^\d+$/.test(value) ? "" : value;
+}

@@ -1,3 +1,4 @@
+import { useSchools } from "../hooks/useRegions/useSchools";
 import NewsImage from "../components/NewsImage/NewsImage";
 import { useEffect, useState } from "react";
 import Header from "../components/Header/Header";
@@ -7,7 +8,7 @@ import api from "../services/api";
 import { useNavigate, useParams } from "react-router-dom";
 import DOMPurify from 'dompurify';
 import Footer from "../components/Footer/Footer";
-import { formatarDataHora } from "../tools/Tools";
+import { formatarDataHora, getSchoolName } from "../tools/Tools";
 import Spinner from "../components/Spinner/Spinner";
 
 async function getArticle(slug: string): Promise<News> {
@@ -30,6 +31,9 @@ async function getArticle(slug: string): Promise<News> {
 export default function Article() {
     const { slug } = useParams();
     const navigate = useNavigate();
+    const { schools, fetchSchools } = useSchools();
+
+    useEffect(() => { void fetchSchools(); }, []);
     const [article, setArticle] = useState<News | null>(null);
     const [image, setImage] = useState<Image | null>(null);
     const [loading, setLoading] = useState(true);
@@ -73,11 +77,13 @@ export default function Article() {
         return null;
     }
 
+    const schoolName = getSchoolName(article.school, schools);
+
     return (
         <>
             <Header />
             <main id="main" className="portal-container article">
-                {article.school?.name && <p className="eyebrow">{article.school.name}</p>}
+                {schoolName && <p className="eyebrow">{schoolName}</p>}
                 <h1>{article.title}</h1>
                 <p className="byline"><span>Por {article.author_name} {article.author?.surname}</span><span>{formatarDataHora(article.updated_at)}</span></p>
                 {image?.file && <figure><NewsImage src={image.file} alt={image.alt || ""} className="cover-preview" /><figcaption>{image.alt}</figcaption></figure>}
