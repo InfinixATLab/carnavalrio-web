@@ -130,14 +130,14 @@ export default function Home() {
                     </div>
                 </div>
                 {loading && !data ? (
-                    <div className="loading-content" role="status"><p className="loading-label"><Spinner inline />Carregando notícias...</p><div className="skeleton skeleton-hero" /><div className="skeleton-lines" aria-hidden="true"><div className="skeleton" /><div className="skeleton" /></div></div>
+                    <div className="loading-content" role="status"><p className="loading-label"><Spinner />Carregando notícias...</p><div className="skeleton skeleton-hero" /><div className="skeleton-lines" aria-hidden="true"><div className="skeleton" /><div className="skeleton" /></div></div>
                 ) : error ? (
                     <div className="empty-state" role="alert"><h2>Não foi possível carregar as notícias.</h2><p>Tente novamente mais tarde.</p></div>
                 ) : !highlight ? (
                     <div className="empty-state"><span className="state-icon"><FiSearch aria-hidden="true" /></span><h2>{searchTerm ? "Nenhuma notícia encontrada" : "Nenhuma notícia publicada"}</h2><p>{searchTerm ? "Tente buscar por outro título." : "As próximas notícias aparecerão aqui."}</p></div>
                 ) : (
                     <div aria-busy={loading}>
-                        {loading && <p className="loading-label" role="status"><Spinner inline />Atualizando notícias...</p>}
+                        {loading && <p className="loading-label" role="status"><Spinner />Atualizando notícias...</p>}
                         <Link to={`/radar/${highlight.slug}`} className="news-card lead">
                             {highlight.image?.url && <NewsImage src={highlight.image.url} alt={highlight.image.alt || ""} />}
                             <div className="card-copy">

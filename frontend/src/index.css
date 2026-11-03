@@ -1958,11 +1958,9 @@ dialog.account-menu {
 .auth, .account, .management, .maintenance { min-height: 0; }
 .home .empty-state, .home .loading-content { min-height: 0; }
 .staff-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
-.loading-screen { display: flex; flex: 1; align-items: center; justify-content: center; min-height: 100dvh; background: rgba(255,255,255,.5); }
-.loading-inline { display: inline-flex; align-items: center; justify-content: center; flex: none; }
-.loading-symbol { display: block; width: 60px; height: 60px; animation: carnival-loading 800ms cubic-bezier(.4,0,.2,1) infinite; }
-.loading-inline .loading-symbol { width: 24px; height: 24px; }
-@keyframes carnival-loading { to { transform: rotate(360deg); } }
+.loading-screen { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,.5); }
+.loading-symbol { display: block; width: 150px; height: 150px; object-fit: contain; animation: carnival-loading 900ms ease-in-out infinite alternate; }
+@keyframes carnival-loading { from { transform: scale(.85); opacity: 1; } to { transform: scale(1.25); opacity: .3; } }
 @media (max-width: 1023px) { .masthead { height: 128px; flex-basis: 128px; } }
 @media (max-width: 767px) {
   .masthead { height: 112px; flex-basis: 112px; }
