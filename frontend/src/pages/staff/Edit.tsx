@@ -38,7 +38,7 @@ async function upload(payload: any, pk?: any): Promise<UploadResult> {
 
 async function getArticle(slug: string): Promise<News> {
     try {
-        const {data} = await api.get(slug + "/");
+        const {data} = await api.get("news/" + slug + "/");
         return data;
     } catch (error: any) {
         console.error("Erro ao buscar a notícia: ", error)
@@ -253,7 +253,7 @@ export default function Edit() {
                 image: imageIdToSubmit, // Envia APENAS O ID
                 author_name: `${localStorage.getItem(NAME)} ${localStorage.getItem(SURNAME)}` || "",
                 slug: identifier,
-                link: `${HOST}radar/${identifier}`,
+                link: `${HOST}${identifier}`,
                 status: 'Publicado',
             };
 

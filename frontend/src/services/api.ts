@@ -5,7 +5,7 @@ import { API_HOST } from "../constants/Host";
 import { getCookie } from "../tools/Tools";
 
 const api = axios.create({
-    baseURL: `${API_HOST}radar/`,
+    baseURL: API_HOST,
     withCredentials: true,
 });
 
@@ -75,7 +75,7 @@ api.interceptors.response.use(
             const refreshToken = localStorage.getItem(REFRESH_TOKEN);
             if (!refreshToken) throw new Error("Refresh token ausente");
 
-            const res = await axios.post(`${API_HOST}radar/token/refresh/`, {
+            const res = await axios.post(`${API_HOST}token/refresh/`, {
                 refresh: refreshToken,
             });
 

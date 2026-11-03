@@ -4,6 +4,7 @@ import {
   Route,
   Outlet,
   Navigate,
+  useParams,
 } from "react-router-dom";
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -20,6 +21,11 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Terms from "./pages/Terms";
 import Contact from "./pages/Contact";
 import Advertise from "./pages/Advertise";
+
+function LegacyArticleRedirect() {
+  const { slug } = useParams();
+  return <Navigate to={`/${slug}`} replace />;
+}
 
 function App() {
   return(
@@ -74,8 +80,9 @@ function App() {
           <Route path="publish" element={<Publish />}/>
           <Route path="edit/:slug" element={<Edit />}/>
         </Route>
+        <Route path="/radar/:slug" element={<LegacyArticleRedirect />} />
         <Route
-          path="/radar/:slug"
+          path="/:slug"
           element = {
             <Article />
           }

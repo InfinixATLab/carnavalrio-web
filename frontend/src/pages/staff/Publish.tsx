@@ -194,7 +194,7 @@ export default function Publish() {
                 school: formData.school,
                 author_name: `${localStorage.getItem(NAME)} ${localStorage.getItem(SURNAME)}` || "",
                 slug: identifier,
-                link: `${HOST}radar/${identifier}`,
+                link: `${HOST}${identifier}`,
                 status: 'Publicado',
             };
             
