@@ -8,7 +8,7 @@ export interface News {
     body: string;
     school?: string;
     author_name: string;
-    author: User;
+    author: User | null;
     link: string;
     slug: string;
     status: string;

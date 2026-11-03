@@ -78,7 +78,7 @@ export default function Article() {
             <main id="main" className="portal-container article">
                 {article.school?.name && <p className="eyebrow">{article.school.name}</p>}
                 <h1>{article.title}</h1>
-                <p className="byline"><span>Por {article.author_name} {article.author.surname}</span><span>{formatarDataHora(article.updated_at)}</span></p>
+                <p className="byline"><span>Por {article.author_name} {article.author?.surname}</span><span>{formatarDataHora(article.updated_at)}</span></p>
                 {image?.file && <figure><img src={image.file} alt={image.alt || ""} className="cover-preview" /><figcaption>{image.alt}</figcaption></figure>}
                 <div className="article-body" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.body) }} />
             </main>
