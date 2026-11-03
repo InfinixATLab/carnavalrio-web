@@ -3,6 +3,7 @@ import {
   Routes, 
   Route,
   Outlet,
+  Navigate,
 } from "react-router-dom";
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -31,11 +32,12 @@ function App() {
           }
         />
         <Route
-          path="/login"
+          path="/infinix/"
           element = {
             <Login />
           }
         />
+        <Route path="/login" element={<Navigate to="/infinix/" replace />} />
         <Route
           path = "/logout"
           element = {
@@ -48,21 +50,21 @@ function App() {
           path = "/me"
           element = {
             <ProtectedRoute>
-              <MyAccount />
+              <RoleProtectedRoute><MyAccount /></RoleProtectedRoute>
             </ProtectedRoute>
           }
         />
         <Route
           path="/register"
           element = {
-            <Register />
+            <ProtectedRoute><RoleProtectedRoute><Register /></RoleProtectedRoute></ProtectedRoute>
           }
         />
         <Route
           path="/management"
           element = {
             <ProtectedRoute>
-              <RoleProtectedRoute allowedRoles={["is_editor", "is_columnist", "is_proofreader"]}>
+              <RoleProtectedRoute>
                 <Outlet />
               </RoleProtectedRoute>
             </ProtectedRoute>

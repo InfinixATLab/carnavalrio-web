@@ -16,7 +16,7 @@ api.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
         const token = localStorage.getItem(ACCESS_TOKEN);
 
-        if (token && config.headers) {
+        if (token && config.headers && !config.headers.Authorization) {
             config.headers.Authorization = `Bearer ${token}`;
         }
 
@@ -95,8 +95,8 @@ api.interceptors.response.use(
             localStorage.removeItem(NAME);
             localStorage.removeItem(SURNAME);
 
-            if (! (window.location.pathname in ["/login", "/register"])) {
-                window.location.href = "/login";
+            if (! (["/infinix", "/infinix/", "/register"].includes(window.location.pathname))) {
+                window.location.href = "/infinix/";
             }
 
             return Promise.reject(refreshErr);

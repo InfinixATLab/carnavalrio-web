@@ -1,162 +1,54 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { FaUser } from "react-icons/fa";
-import { IoMenu } from "react-icons/io5";
+import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import { FiMenu, FiUser, FiX, FiHome } from "react-icons/fi";
 import { ACCESS_TOKEN, NAME } from "../../constants/Token";
 import type { User } from "../../interfaces/User";
 import api from "../../services/api";
-import { FaHouse } from "react-icons/fa6";
 
-const header = () => ({
-    "Content-Type": "application/json",
-    'Authorization': `Bearer ${localStorage.getItem(ACCESS_TOKEN)}`
-})
+interface HeaderProps { disabled?: boolean; }
 
-async function fetchUser(): Promise<User> {
-    const res = await api.get("users/me/", { headers: header() });
-    return res.data;
-}
+export default function Header({ disabled }: HeaderProps) {
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isStaff, setIsStaff] = useState(false);
+    const menuRef = useRef<HTMLDialogElement>(null);
+    const name = localStorage.getItem(NAME);
 
-interface HeaderProps {
-    disabled?: boolean,
-}
+    useEffect(() => {
+        const dialog = menuRef.current;
+        if (isMenuOpen && !dialog?.open) dialog?.showModal();
+        else if (!isMenuOpen && dialog?.open) dialog.close();
+    }, [isMenuOpen]);
 
-export default function Header({
-    disabled,
-}: HeaderProps) {
-    const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-    const [isUserMenuOpen, setIsUserMenuOpen] = useState<boolean>(false);
-    const [user, setUser] = useState<User>({
-        name: "",
-        surname: "",
-        email: "",
-        is_staff: false,
-        is_editor: false,
-        is_columnist: false,
-        is_proofreader: false,
-    });
-    
-    const navigate = useNavigate();
-
-    const handleMenu = () => {
-        if (isUserMenuOpen && !isMenuOpen) setIsUserMenuOpen(false);
-        setIsMenuOpen(!isMenuOpen);
-    }
-
-    async function getUser() {
-        if (!user) navigate("/login")
-
-        if (!user.email) {
-            const data = await fetchUser();
-            setUser(data);
-        }
-
-        if (isMenuOpen && !isUserMenuOpen) setIsMenuOpen(false);
-        setIsUserMenuOpen(!isUserMenuOpen)
-    }
+    useEffect(() => {
+        const token = localStorage.getItem(ACCESS_TOKEN);
+        if (!token) return;
+        let active = true;
+        api.get<User>("users/me/", { headers: { Authorization: `Bearer ${token}` } })
+            .then(({ data }) => { if (active) setIsStaff(Boolean(data.is_staff || data.is_superuser)); })
+            .catch(() => { if (active) setIsStaff(false); });
+        return () => { active = false; };
+    }, []);
 
     return (
         <>
-            <header className="flex justify-between px-4 py-4 items-center bg-[#f3cb05ff] text-white">
-                <button
-                    onClick={handleMenu}
-                    className="hover:text-gray-200 transition-colors w-full"
-                >
-                    <IoMenu size={24} color="#6e3a62ff"/>
-                </button>
-                <Link to="/" className="pb-2">
-                    <img src="/logos/logo.webp" width={500} className="justify-self-center"/>
-                </Link>
-                {/* Botão do usuário */}
-                <button
-                    onClick={() => { !user ? navigate("/login") : getUser() }}
-                    className="relative flex items-center w-full justify-end gap-2 hover:text-gray-200 transition-colors text-[#6e3a62ff]"
-                    disabled={disabled}
-                >
-                    <span className="hidden sm:block text-sm">
-                        {localStorage.getItem(NAME) ? `Olá, ${localStorage.getItem(NAME)}` : "Login/Registrar"}
-                    </span>
-                    <FaUser />
-                    {(isUserMenuOpen && !isMenuOpen) && (
-                        <div className="absolute -right-4 top-10 z-10 w-max bg-white border rounded-md shadow-lg">
-                            <ul className="py-1">
-                                <li className="text-black block sm:hidden text-sm px-6 py-3">
-                                    <span>{localStorage.getItem(NAME) ? `Olá, ${localStorage.getItem(NAME)}` : "Login/Registrar"}</span>
-                                </li>
-                                <hr className="sm:hidden"/>
-                                <li className="text-black text-sm px-6 py-3 hover:bg-gray-100 cursor-pointer">
-                                    <a href="/me">Minha Conta</a>
-                                </li>
-                                {user.is_columnist && (
-                                    <li className="text-black text-sm px-6 py-3 hover:bg-gray-100 cursor-pointer">
-                                        <a href="/management/">Gerenciamento</a>
-                                    </li>
-                                )}
-                                <li className="text-black text-sm px-6 py-3 hover:bg-gray-100 cursor-pointer">
-                                    <a href="/logout">Sair</a>
-                                </li>
-                            </ul>
-                        </div>
-                    )}
-                </button>
-            </header>
+            <a className="skip" href="#main">Pular para o conteúdo</a>
+            <header className="masthead">
+                <div className="portal-container masthead-inner">
+                    <button type="button" className="header-action" aria-label="Abrir menu" aria-haspopup="dialog" aria-expanded={isMenuOpen} onClick={() => setIsMenuOpen(true)}>
+                        <span className="icon-box"><FiMenu aria-hidden="true" /></span><span>Menu</span>
+                    </button>
+                    <Link to="/" className="brand" aria-label="Carnavalrio, início"><img src="/logos/logo.webp" alt="Carnaval Rio" /></Link>
+                    {isStaff && !disabled ? <Link to="/management" className="header-action account-action" aria-label="Área da equipe">
+                        <span>{name ? `Olá, ${name}` : "Área da equipe"}</span><span className="icon-box"><FiUser aria-hidden="true" /></span>
+                    </Link> : <span aria-hidden="true" />}
 
-            {/* Menu horizontal só em telas maiores
-            <nav className="hidden lg:flex gap-6 justify-center p-2 items-center bg-gray-100 text-sm">
-                <ul className="flex item-center gap-[1.25rem] flex-shrink ">
-                    <a href="/">
-                        <li className="hover:text-red-800 cursor-pointer whitespace-nowrap">
-                            Início
-                        </li>
-                    </a>
-                    {!schoolsLoading && schools.map((school: School) => (
-                        <a key={school.id} href={`/?subject=${school.name.toLowerCase().replace(/\s+/g, '-')}`}>
-                            <li className="hover:text-red-800 cursor-pointer whitespace-nowrap">
-                                    {school.name}
-                            </li>
-                        </a>
-                    ))}
-                </ul>
-            </nav> */}
-            
-            {(isMenuOpen && !isUserMenuOpen) && (
-                <div className="fixed inset-0 z-20 flex">
-                    {/* BACKDROP */}
-                    <div
-                        className="fixed inset-0 bg-black opacity-30"
-                        onClick={() => setIsMenuOpen(false)}
-                    />
-
-                    {/* MENU LATERAL */}
-                    <div className="relative w-64 h-full bg-white shadow-lg z-30">
-                        <div className="p-4 border-b font-semibold text-[#6e3a62ff]">
-                            Menu
-                        </div>
-                        <div className="py-2 px-4 text-[#6e3a62ff] hover:bg-gray-100 cursor-pointer flex items-center gap-2">
-                            <FaHouse />
-                            <a href="/" className="font-bold no-underline">Início</a>
-                        </div>
-                        {/* <ul className="flex flex-col px-2 [&>li>a]:no-underline">
-                            <hr className="mx-2"/>
-                            {!sch && regions.map((region) => (
-                                <a href={`/?region=${region.name.toLowerCase().replace(/\s+/g, '-')}`}>
-                                    <li key={region.id} className="py-2 px-4 text-red-800 hover:bg-gray-100 cursor-pointer">
-                                            {region.name}
-                                    </li>
-                                </a>
-                            ))}
-                            <hr className="mx-2"/>
-                            {!subjectsLoading && subjects.map((subject) => (
-                                <a href={`/?subject=${subject.name.toLowerCase().replace(/\s+/g, '-')}`}>
-                                    <li key={subject.id} className="py-2 px-4 text-red-800 hover:bg-gray-100 cursor-pointer">
-                                            {subject.name}
-                                    </li>
-                                </a>
-                            ))}
-                        </ul> */}
-                    </div>
                 </div>
-            )}
+            </header>
+            <dialog ref={menuRef} className="drawer portal-dialog" aria-labelledby="menu-title" onClose={() => setIsMenuOpen(false)} onClick={e => { if (e.target === e.currentTarget) setIsMenuOpen(false); }}>
+                <div className="dialog-heading od-row"><h2 id="menu-title">Menu</h2><button type="button" className="icon-button" aria-label="Fechar menu" onClick={() => setIsMenuOpen(false)}><FiX aria-hidden="true" /></button></div>
+                <nav className="menu-nav" aria-label="Navegação principal"><Link to="/" onClick={() => setIsMenuOpen(false)}><span className="icon-box"><FiHome aria-hidden="true" /></span>Início</Link></nav>
+            </dialog>
+
         </>
-    )
+    );
 }

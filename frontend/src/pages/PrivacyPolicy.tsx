@@ -10,7 +10,7 @@ export default function PrivacyPolicy() {
     return (
         <>
         <Header />
-            <div className="container md:max-w-[60%] xl:max-w-[50%] mx-auto px-4 py-8">
+            <main id="main" className="portal-container legal legal-copy">
                 <h1 className="text-2xl font-bold mb-4">Política de Privacidade</h1>
                 <p>A sua privacidade é de extrema importância para o Radar de Notícias RJ. Esta Política de Privacidade descreve como coletamos, usamos, armazenamos e protegemos suas informações pessoais quando você utiliza nosso portal de notícias. Ao acessar e usar o Radar de Notícias RJ, você concorda com as práticas descritas nesta política.</p>
 
@@ -77,7 +77,7 @@ export default function PrivacyPolicy() {
 
                 <h2 className="text-xl font-semibold mt-6 mb-2">8. Contato</h2>
                 <p>Se você tiver dúvidas sobre esta Política de Privacidade ou sobre as práticas do Radar de Notícias RJ, <Link to="/contato" className="text-red-900 font-semibold cursor-pointer hover:text-red-600">entre em contato conosco</Link>.</p>
-            </div>
+            </main>
         <Footer />
         </>
     );

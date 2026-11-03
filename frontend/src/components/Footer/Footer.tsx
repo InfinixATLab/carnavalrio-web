@@ -1,32 +1,20 @@
-import { FaFacebook, FaInstagram } from "react-icons/fa";
+import { FiFacebook, FiInstagram } from "react-icons/fi";
 import { Link } from "react-router-dom";
 
 export default function Footer() {
     return (
-        <footer className="text-center">
-            <div className="bg-[#f3cb05ff] text-[#6e3a62ff]">
-                <div className=" px-2 py-4 md:flex items-center md:justify-between md:mx-auto md:max-w-[80%] lg:max-w-[50%]">
-                    <h1 className="font-bold">CARNAVALRIO</h1>
-                    <div className="flex flex-row gap-[10px] my-2 items-center justify-center">
-                        <p className="text-sm">SIGA</p>
-                        <a href="https://instagram.com/carnavalrio.app" className="w-[1.2rem] h-[1.2rem]">
-                            <FaInstagram className="w-full h-full" />
-                        </a>
-                        <a href="https://www.facebook.com/Carnavalrioapp/" className="w-[1.2rem] h-[1.2rem]">
-                            <FaFacebook className="w-full h-full" />
-                        </a>
-                    </div>
+        <footer className="site-footer">
+            <div className="footer-brand"><div className="portal-container footer-row">
+                <Link to="/" className="footer-wordmark">CARNAVALRIO</Link>
+                <div className="social od-row"><span>SIGA</span>
+                    <a href="https://instagram.com/carnavalrio.app" aria-label="Carnavalrio no Instagram"><span className="icon-box"><FiInstagram aria-hidden="true" /></span></a>
+                    <a href="https://www.facebook.com/Carnavalrioapp/" aria-label="Carnavalrio no Facebook"><span className="icon-box"><FiFacebook aria-hidden="true" /></span></a>
                 </div>
-            </div>
-            <div className="underline flex flex-col gap-[20px] py-6 px-2 mx-auto border-t border-grey-500 md:flex-row md:justify-center">
-                <Link to="/privacy-policy" className="text-xs">POLÍTICA DE PRIVACIDADE</Link>
-                <Link to="/terms" className="text-xs">TERMOS E CONDIÇÕES</Link>
-                <Link to="/contact" className="text-xs">FALE CONOSCO</Link>
-                <Link to="/advertise" className="text-xs">ANUNCIE</Link>
-            </div>
-            <p className="text-xs border-t border-black px-2 text-center py-4">
-                &copy; 2020 - 2025. Todos direitos reservados a Carnavalrio.app . Este material não pode ser publicado, transmitido por broadcast, reescrito ou redistribuido sem autorização.
-            </p>
+            </div></div>
+            <nav className="portal-container footer-links" aria-label="Institucional">
+                <Link to="/privacy-policy">Política de privacidade</Link><Link to="/terms">Termos e condições</Link><Link to="/contact">Fale conosco</Link><Link to="/advertise">Anuncie</Link>
+            </nav>
+            <p className="portal-container copyright">© 2020 - 2025. Todos direitos reservados a Carnavalrio.app. Este material não pode ser publicado, transmitido por broadcast, reescrito ou redistribuido sem autorização.</p>
         </footer>
-    )
+    );
 }

@@ -5,7 +5,7 @@ export default function Terms() {
     return (
     <>
     <Header />
-        <div className="container md:max-w-[60%] xl:max-w-[50%] mx-auto px-4 py-8">
+        <main id="main" className="portal-container legal legal-copy">
             <h1 className="text-2xl font-bold mb-4">Termos e Condições</h1>
             <p>Bem-vindo ao Radar de Notícias RJ! Ao acessar e usar nosso portal de notícias, você concorda em cumprir e estar vinculado aos seguintes termos e condições de uso. Por favor, leia-os atentamente. Se você não concordar com qualquer parte destes termos, por favor, não utilize nosso portal.</p>
 
@@ -51,7 +51,7 @@ export default function Terms() {
 
             <h2 className="text-xl font-semibold mt-6 mb-2">10. Disposições Gerais</h2>
             <p>Se qualquer disposição destes Termos for considerada inválida ou inexequível, essa disposição será limitada ou eliminada na extensão mínima necessária, e as demais disposições destes Termos permanecerão em pleno vigor e efeito. A falha do Radar de Notícias RJ em fazer valer qualquer direito ou disposição destes Termos não será considerada uma renúncia a tal direito ou disposição.</p>
-        </div>
+        </main>
     <Footer />
     </>
     );

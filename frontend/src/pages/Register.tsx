@@ -1,3 +1,6 @@
+import Header from "../components/Header/Header";
+import Footer from "../components/Footer/Footer";
+import { FiChevronRight } from "react-icons/fi";
 import type React from "react"
 import type { User } from "../interfaces/User";
 import api from "../services/api";
@@ -39,106 +42,38 @@ export default function Register() {
 
     const register = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         try {
             await registerUser(formData);
-            navigate("/login?s=true");
+            navigate("/infinix/?s=true", { replace: true });
         } catch (err) {
             setError("E-mail já cadastrado.");
         }
     }
 
     return (
-        <main className="h-full w-full px-8 py-12">
-            <h1 className="mx-auto text-center max-w-max font-bold text-2xl">Bem-Vindo!</h1>
-            <form onSubmit={register} className="m-auto sm:max-w-[80%] md:max-w-[50%] lg:max-w-[30%] grid grid-cols-1 gap-4 mt-8">
-                {error && (
-                    <div className="w-full mt-2">
-                        <p className="text-red-500 text-sm text-center">{error}</p>
+        <>
+            <Header />
+            <main id="main" className="portal-container auth">
+                <div className="auth-heading"><p className="eyebrow">Sua conta Carnavalrio</p><h1>Crie sua conta.</h1><p>Preencha seus dados para começar.</p></div>
+                <form onSubmit={register} className="auth-form od-stack">
+                    {error && <div className="feedback" role="alert">{error}</div>}
+
+                    <div className="form-field od-field"><label htmlFor="email">E-mail <span className="required">*</span></label><input id="email" type="email" autoComplete="email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} placeholder="seu@email.com" required /></div>
+                    <div className="form-field od-field"><label htmlFor="name">Primeiro nome <span className="required">*</span></label><input id="name" type="text" autoComplete="given-name" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} placeholder="Seu nome" required /></div>
+                    <div className="form-field od-field"><label htmlFor="surname">Sobrenome <span className="required">*</span></label><input id="surname" type="text" autoComplete="family-name" value={formData.surname} onChange={e => setFormData({ ...formData, surname: e.target.value })} placeholder="Seu sobrenome" required /></div>
+                    <div className="form-field od-field">
+                        <label htmlFor="password">Senha <span className="required">*</span></label>
+                        <div className="password-wrap od-row">
+                            <input id="password" type={showPassword ? "text" : "password"} autoComplete="new-password" value={formData.password} onChange={e => setFormData({ ...formData, password: e.target.value })} placeholder="Sua senha" required />
+                            <button type="button" className="icon-button" aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"} aria-pressed={showPassword} onClick={changePasswordVisibility}>{showPassword ? <FaRegEyeSlash aria-hidden="true" /> : <FaRegEye aria-hidden="true" />}</button>
+                        </div>
                     </div>
-                )}
-                <div>
-                    <label htmlFor="email" className="block text-sm font-bold text-gray-700 mb-1">
-                        Email
-                    </label>
-                    <input
-                        id="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        placeholder="seu@email.com"
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                </div>
-                <div>
-                    <label htmlFor="name" className="block text-sm font-bold text-gray-700 mb-1">
-                        Primeiro Nome
-                    </label>
-                    <input
-                        id="name"
-                        type="text"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        placeholder="Gustavo"
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                </div>
-                <div>
-                    <label htmlFor="surname" className="block text-sm font-bold text-gray-700 mb-1">
-                        Sobrenome
-                    </label>
-                    <input
-                        id="surname"
-                        type="text"
-                        value={formData.surname}
-                        onChange={(e) => setFormData({ ...formData, surname: e.target.value })}
-                        placeholder="Grey Oliveira"
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                </div>
-                <div>
-                    <label htmlFor="password" className="block text-sm font-bold text-gray-700 mb-1">
-                        Senha
-                    </label>
-                    <div className="w-full flex">
-                        <input
-                            id="password"
-                            type={showPassword ? "text" : "password"}
-                            value={formData.password}
-                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                            placeholder="Sua senha"
-                            required
-                            className="w-full px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
-                        <button
-                            type="button"
-                            onClick={changePasswordVisibility}
-                            className="border rounded-r-lg px-4"
-                        >
-                            {!showPassword ? (
-                                <FaRegEye />
-                            ) : (
-                                <FaRegEyeSlash />
-                            )}
-                        </button>
-                    </div>
-                </div>
-                <div className="flex flex-col">
-                    <button
-                        type="submit"
-                        className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md transition-colors my-2"
-                    >
-                        Continuar
-                    </button>
-                </div>
-                <div className="text-center my-8">
-                    <p className="text-gray-500 text-sm">Já possui uma conta?</p>
-                    <a href="/login" className="text-red-600 font-bold text-sm underline">Faça login agora!</a>
-                </div>
-            </form>
-        </main>
-    )
+                    <button type="submit" className="button primary full">Criar conta<span className="icon-box"><FiChevronRight aria-hidden="true" /></span></button>
+                    <p className="auth-switch">Já possui uma conta?<br /><a href="/infinix/">Faça login agora</a></p>
+                </form>
+            </main>
+            <Footer />
+        </>
+    );
 }

@@ -1,3 +1,4 @@
+import Spinner from "../components/Spinner/Spinner";
 import { Navigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { useState, useEffect } from "react";
@@ -25,7 +26,7 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
             });
 
             if (res.status === 200) {
-                localStorage.setItem(ACCESS_TOKEN, res.data.acess)
+                localStorage.setItem(ACCESS_TOKEN, res.data.access)
                 setIsAuthorized(true)
             } else {
                 setIsAuthorized(false)
@@ -56,10 +57,10 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
     }
 
     if (isAuthorized === null) {
-        return <div>Loading...</div>
+        return <Spinner />
     }
 
-    return isAuthorized ? children : <Navigate to="/login" />
+    return isAuthorized ? children : <Navigate to="/infinix/" />
 }
 
 export default ProtectedRoute;

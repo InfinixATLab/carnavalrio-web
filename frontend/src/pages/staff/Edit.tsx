@@ -1,3 +1,6 @@
+import Footer from "../../components/Footer/Footer";
+import Modal from "../../components/Modal/Modal";
+import { FiImage, FiCheck } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import Header from "../../components/Header/Header";
 import type { News } from "../../interfaces/News";
@@ -123,22 +126,10 @@ type ErrorModalProps = {
 };
 
 const ErrorModal = ({ message, onClose }: ErrorModalProps) => (
-    <div className="px-2 fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-xl shadow-lg p-6 max-w-sm w-full">
-            <h2 className="text-lg font-bold text-red-600 mb-2">Erro ao Salvar</h2>
-            <p className="text-sm text-gray-800">{message}</p>
-            <div className="mt-4 flex justify-end">
-                <button
-                    className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                    onClick={onClose}
-                >
-                    Fechar
-                </button>
-            </div>
-        </div>
-    </div>
+    <Modal isOpen onClose={() => onClose?.()} modalTitle="Não foi possível concluir">
+        <p className="feedback" role="alert">{message}</p><div className="dialog-actions"><button type="button" className="button outline" onClick={onClose}>Fechar</button></div>
+    </Modal>
 );
-
 
 // --- Componente Principal Refatorado ---
 
@@ -301,140 +292,37 @@ export default function Edit() {
 
     // O JSX principal
     return (
-        <div>
-            {uploadError && (
-                <ErrorModal
-                    message={uploadError}
-                    onClose={() => setUploadError("")}
-                />
-            )}
-
+        <>
+            {uploadError && <ErrorModal message={uploadError} onClose={() => setUploadError("")} />}
             <Header />
-            <main className="mx-4 my-8 md:mx-auto md:max-w-[50%]">
-                
-                {/* --- SELETOR DE ESCOLA (CORRIGIDO) --- */}
-                <div className="flex flex-wrap md:flex-nowrap justify-start gap-4">
-                    <div className="my-4 w-full">
-                        <label htmlFor="school" className="block text-sm font-medium text-gray-700 mb-1">
-                            Selecione uma Escola (opcional)
-                        </label>
-                        <select
-                            id="school"
-                            value={formData.school || ""} // Usa || "" para valor controlado
-                            onChange={(e) => setFormData({ ...formData, school: parseInt(e.target.value) || undefined })}
-                            disabled={schoolsLoading} // Corrigido
-                            className="w-full text-red-500 font-bold text-sm rounded-md  border border-gray-300 p-2 disabled:bg-gray-100 focus:outline-none focus:border-red-200 focus:transition-all focus:duration-200 focus:ring-1 focus:ring-red-200"
-                        >
-                            <option value="">
-                                {schoolsLoading ? "Carregando..." : "Nenhuma"}
-                            </option>
-                            {/* Corrigido */}
-                            {schools.filter(school => school.group === 1 || school.group === 2)
-                                .map((school) => ( 
-                                    <option key={school.id} value={school.id}>
-                                        {school.name}
-                                    </option>
-                                )
-                            )}
-                        </select>
+            <main id="main" className="portal-container editor">
+                <div className="page-heading"><p className="eyebrow">Área da equipe</p><h1>Editar matéria</h1><p>Atualize o conteúdo da notícia.</p></div>
+                <div className="editor-layout">
+                    <div className="editor-main">
+                        <div className="form-field"><label htmlFor="titulo">Título da notícia <span className="required">*</span></label><textarea id="titulo" rows={3} value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} placeholder="Escreva o título da notícia" required /></div>
+                        <p className="editor-date">{formatarDataHora(currentDateTime)}</p>
+                        <div className="form-field"><label id="body-label">Corpo da notícia <span className="required">*</span></label><div aria-labelledby="body-label"><RichTextEditor value={formData.body} onChange={value => setFormData({ ...formData, body: value })} placeholder="Escreva a notícia aqui..." /></div></div>
                     </div>
+                    <aside className="editor-side" aria-label="Propriedades da matéria">
+                        <div className="form-field"><label htmlFor="school">Selecione uma escola <span className="optional">(opcional)</span></label>
+                            <select id="school" value={formData.school || ""} onChange={e => setFormData({ ...formData, school: parseInt(e.target.value) || undefined })} disabled={schoolsLoading}><option value="">{schoolsLoading ? "Carregando..." : "Nenhuma"}</option>{schools.filter(school => school.group === 1 || school.group === 2).map(school => <option key={school.id} value={school.id}>{school.name}</option>)}</select>
+                        </div>
+                        <div className="form-field"><label htmlFor="file">Imagem de capa <span className="required">*</span></label>
+                            <div className="cover-slot">{cover.file_url ? <img className="cover-preview" src={cover.file_url} alt={cover.alt || "Prévia da capa"} /> : <div className="upload-placeholder"><span className="icon-box"><FiImage aria-hidden="true" /></span><span>Adicione uma foto de capa</span></div>}</div>
+                            <input id="file" name="file" className="file-input" type="file" accept="image/*" onChange={e => {
+                                    const file = e.target.files?.[0];
+                                    if (!file) return;
+                                    if (cover.file_url && cover.file_url.startsWith("blob:")) URL.revokeObjectURL(cover.file_url);
+                                    setCover({ ...cover, file, file_url: URL.createObjectURL(file) });
+                                    setImageChanged(true);
+                            }} />
+                        </div>
+                        <div className="form-field"><label htmlFor="alt">Subtítulo da capa <span className="required">*</span></label><textarea id="alt" name="alt" rows={3} value={cover.alt || ""} onChange={e => { setCover({ ...cover, alt: e.target.value }); setImageChanged(true); }} required /></div>
+                    </aside>
                 </div>
-
-                {/* --- TÍTULO --- */}
-                <div>
-                    <label htmlFor="titulo" className="block text-sm font-medium text-gray-700 mb-1">
-                        Título da Notícia
-                    </label>
-                    <textarea
-                        id="titulo"
-                        value={formData.title}
-                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                        required
-                        className="w-full min-h-max border-b-2 border-black focus:outline-none focus:ring-1 focus:ring-white focus:border-transparent font-bold"
-                    />
-                </div>
-
-                {/* --- DATA (OK) --- */}
-                <div className="my-2">
-                    <p className="text-xs text-gray-500">{formatarDataHora(currentDateTime)}</p>
-                </div>
-
-                {/* --- UPLOAD DE IMAGEM (REFEITO) --- */}
-                <label htmlFor="file" className="w-full text-center text-sm my-6 mx-auto block">
-                    <div
-                        className="relative mb-2 bg-gray-200 px-6 py-4 rounded-sm my-1 min-h-[200px] h-[30vh] lg:h-[40vh]  flex items-center justify-center overflow-hidden"
-                        style={{
-                            // Usa 'cover.file_url' que agora guarda a URL original OU o preview
-                            backgroundImage: cover.file_url ? `url(${cover.file_url})` : 'none',
-                            backgroundPosition: 'center',
-                            backgroundRepeat: 'no-repeat',
-                            backgroundSize: "cover"
-                        }}
-                    >
-                        {!cover.file_url && (
-                            <p className="">Adicione uma foto de capa</p>
-                        )}
-                    </div>
-                    <input
-                        type="file"
-                        id="file"
-                        name="file"
-                        className="hidden"
-                        accept="image/*"
-                        onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (!file) return;
-                                
-                                // Limpa preview antigo se houver
-                                if (cover.file_url && cover.file_url.startsWith("blob:")) {
-                                    URL.revokeObjectURL(cover.file_url);
-                                }
-                                
-                                const preview = URL.createObjectURL(file);
-                                
-                                // 'file' é o objeto File, 'file_url' é o preview
-                                setCover({ ...cover, file: file, file_url: preview});
-                                setImageChanged(true); // Marca que a imagem mudou
-                            }}
-                    />
-                    <p className="text-start text-sm ">Subtítulo da capa</p>
-                    <textarea
-                        id="alt"
-                        name="alt"
-                        value={cover.alt || ''} // Usa valor controlado com fallback
-                        className="text-xs text-gray-600 border-b-2 border-black w-full min-h-max focus:outline-none focus:ring-1 focus:ring-white focus:border-transparent"
-                        onChange={(e) => {
-                            setCover({ ...cover, alt: e.target.value});
-                            setImageChanged(true); // Marca que a imagem (metadados) mudou
-                        }}
-                    />
-                </label>
-
-                {/* --- CORPO DA NOTÍCIA --- */}
-                <div className="my-8">
-                    <label htmlFor="body" className="block text-sm font-medium text-gray-700 mb-1">
-                        Corpo da Notícia
-                    </label>
-                    <RichTextEditor
-                        value={formData.body}
-                        onChange={(e) => {setFormData({ ...formData, body: e})}}
-                        placeholder={"Escreva a notícia aqui..."}
-                        className="min-h-[100px]"
-                    />
-                </div>
-
-                {/* --- BOTÃO DE SALVAR --- */}
-                <div className="flex flex-row-reverse w-full">
-                    <button
-                        onClick={handleSubmit}
-                        className="w-full md:w-1/3 px-4 py-2 bg-blue-600 text-white rounded-md transition-colors self-end"
-                        disabled={isLoading}
-                    >
-                        {isLoading ? "Salvando..." : "Salvar"}
-                    </button>
-                </div>
-                <footer className="min-h-[2rem]"></footer>
+                <div className="editor-submit"><p>Campos com <span className="required">*</span> são obrigatórios.</p><button type="button" onClick={handleSubmit} className="button primary" disabled={isLoading}><span className="icon-box"><FiCheck aria-hidden="true" /></span>{isLoading ? "Salvando..." : "Salvar"}</button></div>
             </main>
-        </div>
-    )
+            <Footer />
+        </>
+    );
 }

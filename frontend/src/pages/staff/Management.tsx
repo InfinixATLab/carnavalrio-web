@@ -1,8 +1,11 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import type { News } from "../../interfaces/News";
 import api from "../../services/api";
 import { useEffect, useState } from "react";
-import { FaEdit, FaTrashAlt } from "react-icons/fa";
+import { FiEdit2, FiTrash2, FiPlus, FiSearch } from "react-icons/fi";
+import Header from "../../components/Header/Header";
+import Footer from "../../components/Footer/Footer";
+import PortalModal from "../../components/Modal/Modal";
 
 type ModalProps = {
     message: string;
@@ -45,32 +48,12 @@ export default function Management() {
     const [articleToDelete, setArticleToDelete] = useState<string | null>(null);
     const navigate = useNavigate();
     const Modal = ({ message, onConfirm, onCancel }: ModalProps) => (
-        <div className="px-2 fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl shadow-lg p-6 max-w-sm w-full">
-                <h2 className="text-lg font-bold text-red-600 mb-2">Deseja continuar?</h2>
-                <p className="text-sm text-gray-800">{message}</p>
-                {onConfirm && (
-                    <div className="mt-4 flex justify-center">
-                        <button
-                            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                            onClick={onConfirm}
-                        >
-                            Deletar Matéria
-                        </button>
-                    </div>
-                )}
-                <div className="mt-4 flex justify-center">
-                    <button
-                        className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-                        onClick={onCancel}
-                    >
-                        Fechar
-                    </button>
-                </div>
-            </div>
-        </div>
+        <PortalModal isOpen onClose={() => onCancel?.()} modalTitle="Deletar matéria?">
+            <p>{message}</p>
+            <div className="dialog-actions"><button type="button" className="button outline" onClick={onCancel}>Fechar</button><button type="button" className="button danger" onClick={onConfirm}>Deletar matéria</button></div>
+        </PortalModal>
     );
-    
+
     useEffect(() => {
         (async () => {
             try {
@@ -92,81 +75,27 @@ export default function Management() {
         }
     }
     
-    return(
-        <div className="py-8">
-            {articleToDelete && (
-                <Modal 
-                    message="Ao continuar, esta matéria será deletada."
-                    onConfirm={() => remove(articleToDelete)}
-                    onCancel={() => setArticleToDelete("")}
-                />
-            )}
-            <header className="px-4 text-center ">
-                Gerenciamento de Notícias
-            </header>
-            <div className="px-4 my-8 flex flex-col gap-5 mx-auto sm:max-w-[80%] md:max-w-[60%] lg:max-w-[50%]">
-                <div className="flex flex-col md:flex-row items-center gap-4">
-                    {/* Add News Button */}
-                    <button
-                        onClick={() => navigate("publish/")}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
-                    >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                        </svg>
-                        <span className="no-wrap">Nova Matéria</span>
-                    </button>
-                    {/* Search */}
-                    <div className="relative w-full">
-                        <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                                />
-                            </svg>
-                        </div>
-                        <input
-                            type="text"
-                            placeholder="Buscar sua notícia..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 my-2 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
-                    </div>
+    return (
+        <>
+            <Header />
+            <main id="main" className="portal-container management">
+                {articleToDelete && <Modal message="Ao continuar, esta matéria será deletada." onConfirm={() => remove(articleToDelete)} onCancel={() => setArticleToDelete("")} />}
+                <div className="page-heading management-heading od-row">
+                    <div><p className="eyebrow">Área da equipe</p><h1>Gerenciamento de notícias</h1><p>Organize e edite as matérias do portal.</p></div>
+                    <div className="staff-actions"><Link to="/me" className="button outline">Minha conta</Link><Link to="/logout" className="button outline">Sair</Link><button type="button" onClick={() => navigate("publish/")} className="button primary"><span className="icon-box"><FiPlus aria-hidden="true" /></span>Nova matéria</button></div>
                 </div>
-                {/* News */}
-                <div className="max-w-full overflow-x-hidden grid grid-cols-1 xl:grid-cols-2 gap-4">
-                    {Array.isArray(news) && news.map((article, id) => { console.log(article);
-                     return (
-                        <div key={id} className="flex gap-4 items-start border border-gray-300 shadow-md py-4 px-2 rounded-md">
-                            <div className="w-25 h-full bg-gray-100 rounded-sm overflow-hidden w-1/2">
-                                {article.image && (
-                                    <img
-                                        src={article.image.file}
-                                        className="w-full h-full object-cover object-center"
-                                    />
-                                )}
-                            </div>
-                            <div className="flex flex-col flex-wrap w-full grow sm:gap-1 md:justify-between">
-                                <p className="text-sm font-semibold max-w-full">{article.title}</p>
-                            </div>
-                            <div className="flex gap-4 flex-col items-center">
-                                <FaEdit
-                                    className="cursor-pointer"
-                                    onClick={() => navigate(`edit/${article.slug}`)}
-                                />
-                                <FaTrashAlt
-                                    className="text-red-600 cursor-pointer"
-                                    onClick={() => setArticleToDelete(article.slug)}
-                                />
-                            </div>
-                        </div>
-                    )})}
+                <div className="search-box od-row"><span className="icon-box"><FiSearch aria-hidden="true" /></span><label className="sr-only" htmlFor="admin-search">Buscar matérias pelo título</label><input id="admin-search" type="search" placeholder="Buscar sua notícia..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} /></div>
+                <div className="admin-table">
+                    <div className="table-header"><span>Matéria</span><span>Ações</span></div>
+                    {Array.isArray(news) && news.map(article => (
+                        <article key={article.id ?? article.slug} className="admin-row">
+                            <div className="admin-news od-row">{article.image?.file && <img src={article.image.file} alt={article.image.alt || ""} loading="lazy" />}<h2>{article.title}</h2></div>
+                            <div className="row-actions od-row"><button type="button" className="icon-button" aria-label={`Editar: ${article.title}`} onClick={() => navigate(`edit/${article.slug}`)}><FiEdit2 aria-hidden="true" /></button><button type="button" className="icon-button danger-icon" aria-label={`Deletar: ${article.title}`} onClick={() => setArticleToDelete(article.slug)}><FiTrash2 aria-hidden="true" /></button></div>
+                        </article>
+                    ))}
                 </div>
-            </div>
-        </div>
-    )
+            </main>
+            <Footer />
+        </>
+    );
 }

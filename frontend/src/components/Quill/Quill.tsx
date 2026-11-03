@@ -32,7 +32,7 @@ const RichTextEditor: React.FC<Quill> = ({
       ['bold', 'italic', 'underline', 'strike'], // Negrito, itálico, sublinhado, tachado
       [{ 'list': 'ordered'}, { 'list': 'bullet' }], // Listas ordenadas e não ordenadas
       [{ 'indent': '-1'}, { 'indent': '+1' }], // Recuo
-      ['link', 'image', 'video'], // Inserir link, imagem, vídeo
+      ['link', 'image'], // Inserir link e imagem
       [{ 'align': [] }], // Alinhamento de texto
       ['clean'] // Remover formatação
     ],
@@ -43,7 +43,7 @@ const RichTextEditor: React.FC<Quill> = ({
     'header',
     'bold', 'italic', 'underline', 'strike', 'blockquote',
     'list', 'bullet', 'indent',
-    'link', 'image', 'video',
+    'link', 'image',
     'align'
   ];
 

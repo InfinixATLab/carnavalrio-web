@@ -1,3 +1,4 @@
+import Spinner from "../components/Spinner/Spinner";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { ACCESS_TOKEN, EMAIL, NAME, SURNAME, REFRESH_TOKEN } from "../constants/Token";
@@ -12,10 +13,10 @@ function Logout() {
     localStorage.removeItem(NAME);
     localStorage.removeItem(SURNAME);
 
-    navigate("/login");
+    navigate("/infinix/");
   }, [navigate]);
 
-  return null;
+  return <Spinner />;
 }
 
 export default Logout;

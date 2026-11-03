@@ -1,11 +1,12 @@
+import Spinner from "../components/Spinner/Spinner";
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 
+import { FiSearch, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import Header from "../components/Header/Header";
 import Footer from "../components/Footer/Footer";
-import Spinner from "../components/Spinner/Spinner";
 import { formatarDataHora } from "../tools/Tools";
 import type { News } from "../interfaces/News";
 import { useSchools } from "../hooks/useRegions/useSchools";
@@ -57,7 +58,6 @@ const useDebounce = (value: string, delay: number) => {
 
 export default function Home() {
     const [searchParams] = useSearchParams();
-    const navigate = useNavigate();
 
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState("");
@@ -121,137 +121,59 @@ export default function Home() {
         setCurrentPage((prev) => Math.max(prev - 1, 1));
     }
 
-    const routeToArticle = (slug: string) => navigate(`radar/${slug}/`);
-
-    if (loading && !data) return <Spinner />;
-
     return (
         <>
             <Header />
-            <div className="relative max-w-[80%] md:max-w-[50%] mx-auto p-4">
-                <div className="absolute left-8 top-1/2 transform -translate-y-1/2 text-gray-400">
-                    <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                        />
-                    </svg>
+            <main id="main" className="portal-container home">
+                <div className="home-intro od-row">
+                    <div><p className="eyebrow">Carnavalrio</p><h1>No radar do carnaval</h1></div>
+                    <div className="search-box od-row">
+                        <span className="icon-box"><FiSearch aria-hidden="true" /></span>
+                        <label className="sr-only" htmlFor="news-search">Buscar notícias pelo título</label>
+                        <input id="news-search" type="search" placeholder="Buscar sua notícia..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+                    </div>
                 </div>
-                <input
-                    type="text"
-                    placeholder="Buscar sua notícia..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-            </div>
-
-            <div className="bg-white py-4 px-4 space-y-4 min-h-screen md:max-w-[80%] lg:max-w-[50%] mx-auto">
-                {loading && data && <div className="text-center p-4">Atualizando...</div>}
-                {error && <div className="text-center p-4">Nenhuma notícia publicada até o momento...</div>}
-                
-                {highlight && (
-                    <div onClick={() => routeToArticle(highlight.slug)} className="hover:cursor-pointer">
-                        <p className="text-[#6e3a62ff] font-bold text-sm mb-2">
-                            {highlight.school}
-                        </p>
-                        <div
-                            className="bg-gray-200 h-[300px] rounded-sm flex items-end justify-start text-white"
-                            style={{
-                                backgroundImage: `url('${highlight.image.url}')`,
-                                backgroundPosition: "center",
-                                backgroundRepeat: "no-repeat",
-                                backgroundSize: "cover",
-                            }}
-                        >
-                            <h2 className="text-1xl font-bold bg-gray-900 bg-opacity-30 p-1">
-                                {highlight.title}
-                            </h2>
+                {loading && !data ? (
+                    <div className="loading-content" role="status"><p className="loading-label"><Spinner inline />Carregando notícias...</p><div className="skeleton skeleton-hero" /><div className="skeleton-lines" aria-hidden="true"><div className="skeleton" /><div className="skeleton" /></div></div>
+                ) : error ? (
+                    <div className="empty-state" role="alert"><h2>Não foi possível carregar as notícias.</h2><p>Tente novamente mais tarde.</p></div>
+                ) : !highlight ? (
+                    <div className="empty-state"><span className="state-icon"><FiSearch aria-hidden="true" /></span><h2>{searchTerm ? "Nenhuma notícia encontrada" : "Nenhuma notícia publicada"}</h2><p>{searchTerm ? "Tente buscar por outro título." : "As próximas notícias aparecerão aqui."}</p></div>
+                ) : (
+                    <div aria-busy={loading}>
+                        {loading && <p className="loading-label" role="status"><Spinner inline />Atualizando notícias...</p>}
+                        <Link to={`/radar/${highlight.slug}`} className="news-card lead">
+                            {highlight.image?.url && <img src={highlight.image.url} alt={highlight.image.alt || ""} />}
+                            <div className="card-copy">
+                                {highlight.school && <p className="eyebrow">{highlight.school}</p>}
+                                <h2>{highlight.title}</h2>
+                                <p className="byline"><span>Por {highlight.authorName}</span><span>{formatarDataHora(highlight.updatedAt)}</span></p>
+                                <span className="read-story">Ler matéria<span className="icon-box"><FiChevronRight aria-hidden="true" /></span></span>
+                            </div>
+                        </Link>
+                        <div className="compact-grid">
+                            {mainList.map(item => (
+                                <Link key={item.id} to={`/radar/${item.slug}`} className="news-card compact">
+                                    {item.image?.url && <img src={item.image.url} alt={item.image.alt || ""} loading="lazy" />}
+                                    <div className="card-copy">{item.school && <p className="eyebrow">{item.school}</p>}<h2>{item.title}</h2></div>
+                                </Link>
+                            ))}
                         </div>
-                        <p className="text-xs text-gray-600 mt-2 font-bold">
-                            Publicado por {highlight.authorName} |{" "}
-                            {formatarDataHora(highlight.updatedAt)}
-                        </p>
+                        {remnantList.length > 0 && <><div className="section-label"><h2>Mais notícias</h2><span aria-hidden="true" /></div>
+                            <div className="news-grid">{remnantList.map(item => (
+                                <Link key={item.id} to={`/radar/${item.slug}`} className="news-card tile">
+                                    {item.image?.url && <img src={item.image.url} alt={item.image.alt || ""} loading="lazy" />}
+                                    <div className="card-copy">{item.school && <p className="eyebrow">{item.school}</p>}<h2>{item.title}</h2></div>
+                                </Link>
+                            ))}</div></>}
+                        {totalPages > 1 && <nav className="pagination" aria-label="Paginação de notícias">
+                            <button type="button" className="icon-button" aria-label="Página anterior" onClick={handlePrevPage} disabled={currentPage === 1 || loading}><FiChevronLeft aria-hidden="true" /></button>
+                            <p aria-live="polite"><strong>{currentPage}</strong> de {totalPages}</p>
+                            <button type="button" className="icon-button" aria-label="Próxima página" onClick={handleNextPage} disabled={currentPage >= totalPages || loading}><FiChevronRight aria-hidden="true" /></button>
+                        </nav>}
                     </div>
                 )}
-
-                {/* Lista principal */}
-                <div className="max-w-full overflow-x-hidden grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {mainList.map((item: News) => (
-                        <div
-                            key={item.id}
-                            className="flex gap-4 items-start border border-gray-300 shadow-md py-4 px-2 rounded-md cursor-pointer"
-                            onClick={() => routeToArticle(item.slug)}
-                        >
-                            {/* ATUALIZADO: checa 'item.image' */}
-                            {item.image && (
-                                <div className="w-1/2 h-full bg-gray-100 rounded-sm overflow-hidden">
-                                    <img
-                                        // ATUALIZADO: de 'item.preview.file' para 'item.image.fileUrl'
-                                        src={item.image.url}
-                                        // REMOVIDO: 'alt={item.preview.alt}' (você disse que removeu 'alt')
-                                        className="w-full h-full object-cover"
-                                    />
-                                </div>
-                            )}
-                            <div className="flex flex-col flex-wrap w-1/2 grow">
-                                <p className="text-[#6e3a62ff] font-bold text-sm">{item.school?.name}</p>
-                                <p className="text-sm font-semibold max-w-full">{item.title}</p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-                {/* Restantes */}
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6 rounded-md">
-                    {remnantList.map((item: News) => (
-                        <div
-                            key={item.id}
-                            className="bg-slate-950 bg-opacity-20 rounded-sm overflow-hidden shadow-lg cursor-pointer"
-                            onClick={() => routeToArticle(item.slug)}
-                        >
-                            {/* ATUALIZADO: checa 'item.image' */}
-                            {item.image && (
-                                <img
-                                    // ATUALIZADO: de 'item.preview.file' para 'item.image.fileUrl'
-                                    src={item.image.url}
-                                    // REMOVIDO: 'alt={item.preview.alt}'
-                                    className="w-full h-32 object-cover shadow-lg"
-                                />
-                            )}
-                            <div className="p-2">
-                                {/* ATUALIZADO: de 'subjectName' para 'schoolName' */}
-                                <p className="text-xs text-[#6e3a62ff]">{item.school?.name}</p>
-                                <h3 className="text-sm font-semibold mt-1">{item.title}</h3>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-                {/* Controles de paginação (sem alterações) */}
-                {totalPages > 1 && (
-                    <div className="flex justify-center items-center space-x-6 mt-8">
-                        <button
-                            onClick={handlePrevPage}
-                            className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                            disabled={currentPage === 1 || loading}
-                        >◀</button>
-                        <span className="text-lg font-bold">{currentPage} de {totalPages}</span>
-                        <button
-                            onClick={handleNextPage}
-                            className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                            disabled={currentPage >= totalPages || loading}
-                        >▶</button>
-                    </div>
-                )}
-            </div>
+            </main>
             <Footer />
         </>
     );
